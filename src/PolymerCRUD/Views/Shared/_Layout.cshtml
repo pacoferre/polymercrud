@@ -33,12 +33,11 @@
     <!-- For shared styles, shared-styles.html import in elements.html -->
     <style is="custom-style" include="shared-styles"></style>
 
+    <link rel="stylesheet" href="~/css/main.css" />
     <environment names="Development">
-        <link rel="stylesheet" href="~/css/main.css" />
         <script src="~/lib/webcomponentsjs/webcomponents-lite.js" asp-append-version="true"></script>
     </environment>
     <environment names="Staging,Production">
-        <link rel="stylesheet" href="~/css/main.min.css" asp-append-version="true" />
         <script src="~/lib/webcomponentsjs/webcomponents-lite.js" asp-append-version="true"></script>
     </environment>
 </head>
