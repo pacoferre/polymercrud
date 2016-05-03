@@ -1,0 +1,141 @@
+﻿<link rel="import" href="../lib/carbon-route/carbon-location.html">
+<link rel="import" href="../lib/carbon-route/carbon-route.html">
+
+<link rel="import" href="../lib/app-layout/app-scroll-effects/app-scroll-effects.html">
+<link rel="import" href="../lib/app-layout/app-layout.html">
+
+<link rel="import" href="lib/awsh-editor/awsh-listeditor.html">
+
+<dom-module id="swd-main">
+    <template>
+        <style>
+            paper-menu {
+                background-color: #fafafa;
+            }
+
+            app-header {
+              background-color: #4285f4;
+              color: #fff;
+            }
+            app-header paper-icon-button {
+              --paper-icon-button-ink-color: #fff;
+            }
+            app-drawer-layout {
+              --app-drawer-layout-content-transition: margin 0.2s;
+            }
+            app-drawer {
+              --app-drawer-content-container: {
+                background-color: #eee;
+              }
+            }
+            .drawer-content {
+              margin-top: 64px;
+              height: calc(100vh - 64px);
+              overflow: auto;
+            }
+
+            iron-pages {
+              height: calc(100vh - 64px);
+              overflow: hidden;
+            }
+            .page-title {
+              font-size: 24px !important;
+            }
+
+            paper-menu {
+                background-color: #eee;
+            }
+
+            paper-menu a > *, paper-menu paper-item > *, paper-menu paper-icon-item > * {
+                pointer-events: none;
+            }
+
+            @media (max-width: 600px) {
+                .page-title {
+                    font-size: 22px !important;
+                }
+            }
+        </style>
+        <carbon-location use-hash-as-path route="{{route}}" id="lation"></carbon-location>
+
+        <!-- Two routes, one for the home page, and one for the tabs page. -->
+        <carbon-route route="{{route}}" pattern="/:actual" data="{{data}}"></carbon-route>
+
+        <app-header-layout>
+            <app-drawer-layout id="drawerLayout">
+                <app-drawer swipe-open>
+                    <paper-menu selected="{{data.actual}}" attr-for-selected='key' selectable="paper-icon-item"
+                                class="drawer-content">
+                        <paper-icon-item role="menuitem" key="Users" on-tap="menuSelected">
+                            <iron-icon icon="social:people" item-icon></iron-icon><span>Users</span>
+                        </paper-icon-item>
+                        <paper-icon-item role="menuitem" key="Reports" on-tap="menuSelected">
+                            <iron-icon icon="icons:timeline" item-icon></iron-icon><span>Reports</span>
+                        </paper-icon-item>
+                    </paper-menu>
+                </app-drawer>
+
+                <iron-pages selected="{{data.actual}}" attr-for-selected='key'>
+                    <div key="Users">
+                        <awsh-listeditor id="users" oname="AppUser"
+                                         listhref="/elements/swd-userlistitem.html" listelement="swd-userlistitem"
+                                         edithref="/elements/swd-useredit.html" editelement="swd-useredit"></awsh-listeditor>
+                    </div>
+                    <div key="Reports">Reports</div>
+                </iron-pages>
+
+            </app-drawer-layout>
+
+            <app-header fixed effects="waterfall">
+                <app-toolbar>
+                    <paper-icon-button id="toggle" icon="menu"></paper-icon-button>
+                    <div title class="page-title">{{computeFullName(data.actual)}}</div>
+                </app-toolbar>
+            </app-header>
+
+        </app-header-layout>
+    </template>
+    <script>
+    Polymer({
+        is: 'swd-main',
+        properties: {
+            route: {
+                type: Object,
+            },
+            data: {
+                type: Object,
+            },
+        },
+        menuSelected: function (e) {
+            var key = e.currentTarget.getAttribute('key');
+
+            if (key == "Users")
+            {
+                users.reset();
+            }
+        },
+        computeFullName: function (key) {
+            if (key === undefined)
+            {
+                return "";
+            }
+            return key.replace(/_/g, " ");
+        },
+        ready: function() {
+            var drawerLayout = this.$.drawerLayout;
+            this.$.toggle.addEventListener('tap', function () {
+                if (drawerLayout.forceNarrow || !drawerLayout.narrow) {
+                    drawerLayout.forceNarrow = !drawerLayout.forceNarrow;
+                } else {
+                    drawerLayout.drawer.toggle();
+                }
+            });
+            this.async(function () {
+                if (!this.route.path) {
+                    this.set('data.actual', 'Users');
+                    window.location = ("" + window.location).replace(/\#.*$/, "") + "#/Users";
+                }
+            });
+        },
+    });
+</script>
